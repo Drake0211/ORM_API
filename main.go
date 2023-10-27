@@ -38,6 +38,8 @@ func main() {
 	http.HandleFunc("/Create", Create)
 	http.HandleFunc("/Insert", Insert)
 	http.HandleFunc("/Delete", Delete)
+	http.HandleFunc("/Edit", Edit)
+	http.HandleFunc("/Update", Update)
 
 	log.Println("Running server...")
 	http.ListenAndServe(":3000", nil)
@@ -91,7 +93,57 @@ func Insert(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func Edit(w http.ResponseWriter, r *http.Request) {
+	idEmployee := r.URL.Query().Get("id")
+	fmt.Println(idEmployee)
+
+	SuccessfulConnection := BDConnection()
+	RegisterEdit, err := SuccessfulConnection.Query("SELECT * FROM employees WHERE id=?", idEmployee)
+
+	employee := Employee{}
+	for RegisterEdit.Next() {
+		var id int
+		var name, email string
+		err = RegisterEdit.Scan(&id, &name, &email)
+
+		if err != nil {
+			panic(err.Error())
+		}
+		employee.Id = id
+		employee.Name = name
+		employee.Email = email
+	}
+	fmt.Println(employee)
+	templates.ExecuteTemplate(w, "Edit", employee)
+}
+
+func Update(w http.ResponseWriter, r *http.Request) {
+	if r.Method == "POST" {
+		id := r.FormValue("id")
+		name := r.FormValue("name")
+		email := r.FormValue("email")
+
+		SuccessfulConnection := BDConnection()
+		UpdateRegister, err := SuccessfulConnection.Prepare("UPDATE employees SET name=?, email=? WHERE id=?")
+		if err != nil {
+			panic(err.Error())
+		}
+		UpdateRegister.Exec(name, email, id)
+
+		http.Redirect(w, r, "/", 301)
+	}
+}
+
 func Delete(w http.ResponseWriter, r *http.Request) {
 	idEmployee := r.URL.Query().Get("id")
 	fmt.Println(idEmployee)
+
+	SuccessfulConnection := BDConnection()
+	DeleteRegister, err := SuccessfulConnection.Prepare("DELETE FROM employees WHERE id=?")
+	if err != nil {
+		panic(err.Error())
+	}
+	DeleteRegister.Exec(idEmployee)
+
+	http.Redirect(w, r, "/", 301)
 }

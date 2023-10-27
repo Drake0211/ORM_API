@@ -1,4 +1,4 @@
-{{define "Create"}}
+{{define "Edit"}}
 {{template "headbroad"}}
 
 <div class="card">
@@ -7,20 +7,22 @@
     </div>
 
     <div class="card-body">
-        <form method="post" action="/Insert">
+        <form method="post" action="/Update">
+                <input type="hidden" value={{.Id}} class="form-control" name="id" id="id" placeholder="">
+
             <div class="form-group">
                 <label for="">Name:</label>
-                <input type="text" class="form-control" name="name" id="name" aria-describeby="helpId" placeholder="">
+                <input type="text" class="form-control" name="name" value={{.Name}} id="name" aria-describeby="helpId" placeholder="">
                 <small id="helpId" class="form-text text-muted">Write your name</small>
             </div>
 
             <div class="form-group">
                 <label for="">Email:</label>
-                <input type="email" class="form-control" name="email" id="email" aria-describeby="emailHelpId" placeholder="">
+                <input type="email" class="form-control" name="email" value={{.Email}} id="email" aria-describeby="emailHelpId" placeholder="">
                 <small id="emailHelpId" class="form-text text-muted">Write your email</small>
             </div>
 
-            <button type="submit" class="btn btn-success">Add new employee</button>
+            <button type="submit" class="btn btn-success">Update employee</button>
             <a name="" id="" class="btn btn-danger" href="/" role="button">Cancel</a>
         </form>
     </div>

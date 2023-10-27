@@ -2,6 +2,7 @@
 {{template "headbroad"}}
 
     <a name="" id="" class="btn btn-primary" href="/Create" role="button">Add employee</a>
+    <br/><br/>
         <table class="table">
             <thead>
                 <tr>
@@ -16,11 +17,12 @@
             {{range.}}
                 <tr>
                     <td> {{.Id}} </td>
-                    <td> Fabian Escobedo {{.Name}} </td>
-                    <td> 200247utags.edu.mx {{.Email}} </td>
-                    <td> Editar {{.Id}} | 
-                    
-                    <a name="" id="" class="btn btn-danger" href="/delete?id={{.Id}}" role="button">Delete</a>
+                    <td> {{.Name}} </td>
+                    <td> {{.Email}} </td>
+                    <td> 
+                        <a name="" id="" class="btn btn-warning" href="/Edit?id={{.Id}}" role="button">Update</a>
+                        
+                        <a name="" id="" class="btn btn-danger" href="/Delete?id={{.Id}}" role="button">Delete</a>
                     </td>
                 </tr>
             {{end}}
