@@ -3,12 +3,19 @@ package main
 import (
 	//"fmt"
 	"database/sql"
+	"fmt"
 	"log"
 	"net/http"
 	"text/template"
 
 	_ "github.com/go-sql-driver/mysql"
 )
+
+type Employee struct {
+	Id    int
+	Name  string
+	Email string
+}
 
 // Funcion para la conexion de la base de datos
 func BDConnection() (connection *sql.DB) {
@@ -29,21 +36,62 @@ var templates = template.Must(template.ParseGlob("templates/*"))
 func main() {
 	http.HandleFunc("/", Home)
 	http.HandleFunc("/Create", Create)
+	http.HandleFunc("/Insert", Insert)
+	http.HandleFunc("/Delete", Delete)
+
 	log.Println("Running server...")
 	http.ListenAndServe(":3000", nil)
 }
 
 func Home(w http.ResponseWriter, r *http.Request) {
 	SuccessfulConnection := BDConnection()
-	InsertRegister, err := SuccessfulConnection.Prepare("INSERT INTO employees(name, email) VALUES('Jesus Cortez', '200348@utags.edu.mx')")
+	Registers, err := SuccessfulConnection.Query("SELECT * FROM employees")
 	if err != nil {
 		panic(err.Error())
 	}
-	InsertRegister.Exec()
+	employee := Employee{}
+	arrayEmployee := []Employee{}
 
-	templates.ExecuteTemplate(w, "Home", nil)
+	for Registers.Next() {
+		var id int
+		var name, email string
+		err = Registers.Scan(&id, &name, &email)
+
+		if err != nil {
+			panic(err.Error())
+		}
+		employee.Id = id
+		employee.Name = name
+		employee.Email = email
+
+		arrayEmployee = append(arrayEmployee, employee)
+	}
+	//fmt.Println(arrayEmployee)
+
+	templates.ExecuteTemplate(w, "Home", arrayEmployee)
 }
 
 func Create(w http.ResponseWriter, r *http.Request) {
 	templates.ExecuteTemplate(w, "Create", nil)
+}
+
+func Insert(w http.ResponseWriter, r *http.Request) {
+	if r.Method == "POST" {
+		name := r.FormValue("name")
+		email := r.FormValue("email")
+
+		SuccessfulConnection := BDConnection()
+		InsertRegister, err := SuccessfulConnection.Prepare("INSERT INTO employees(name, email) VALUES(?,?)")
+		if err != nil {
+			panic(err.Error())
+		}
+		InsertRegister.Exec(name, email)
+
+		http.Redirect(w, r, "/", 301)
+	}
+}
+
+func Delete(w http.ResponseWriter, r *http.Request) {
+	idEmployee := r.URL.Query().Get("id")
+	fmt.Println(idEmployee)
 }

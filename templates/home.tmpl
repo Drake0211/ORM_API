@@ -6,19 +6,26 @@
             <thead>
                 <tr>
                     <th>ID</th>
-                    <th>Nombre</th>
-                    <th>Correo</th>
-                    <th>Acciones</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Actions</th>
                 </tr>
             </thead>
+
             <tbody>
+            {{range.}}
                 <tr>
-                    <td>1</td>
-                    <td>Fabian Escobedo</td>
-                    <td>200247utags.edu.mx</td>
-                    <td> Editar | Borrar </td>
+                    <td> {{.Id}} </td>
+                    <td> Fabian Escobedo {{.Name}} </td>
+                    <td> 200247utags.edu.mx {{.Email}} </td>
+                    <td> Editar {{.Id}} | 
+                    
+                    <a name="" id="" class="btn btn-danger" href="/delete?id={{.Id}}" role="button">Delete</a>
+                    </td>
                 </tr>
+            {{end}}
             </tbody>
-        </table>    
+        </table>
+
 {{template "footer"}}
 {{end}}
